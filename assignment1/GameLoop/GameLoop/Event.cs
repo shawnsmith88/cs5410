@@ -37,8 +37,14 @@ namespace GameLoop
 
         public static Event parseEvent(string eventString)
         {
-            string[] strs = eventString.Split(' ');
-            return new Event(strs[2], strs[3], strs[4]);
+            try
+            {
+                string[] strs = eventString.Split(' ');
+                return new Event(strs[2], strs[3], strs[4]);
+            } catch (Exception ignore)
+            {
+                return null;
+            }
         }
       
     }

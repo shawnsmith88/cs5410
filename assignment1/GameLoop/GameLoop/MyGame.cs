@@ -105,7 +105,11 @@ namespace GameLoop
             }
             else
             {
-                Events.Add(Event.parseEvent(CurrLine));
+                Event e = Event.parseEvent(CurrLine);
+                if (e != null)
+                {
+                    Events.Add(e);
+                }
                 Console.Write("\n[cmd:] ");
                 CurrLine = "";
             }
