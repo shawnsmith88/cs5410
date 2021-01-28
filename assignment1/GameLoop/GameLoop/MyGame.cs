@@ -9,7 +9,7 @@ namespace GameLoop
         string CurrLine;
         List<Event> Events;
         bool IsRunning;
-        Event FiredEvent;
+        List<Event> FiredEvents;
 
         public MyGame()
         {
@@ -20,6 +20,7 @@ namespace GameLoop
         {
             Console.WriteLine("GameLoop Demo Initializing");
             Events = new List<Event>();
+            FiredEvents = new List<Event>();
         }
 
         public void run()
@@ -29,25 +30,21 @@ namespace GameLoop
             DateTime begin = DateTime.Now;
             while (IsRunning)
             {
+                processInput();
                 update(DateTime.Now-begin);
+                render();
             }
         }
 
         public void update(TimeSpan elapsedTime)
         {
-            if (Console.KeyAvailable)
-            {
-                processInput();
-            }
 
-            bool fired = false;
             List<Event> toRemove = new List<Event>();
             Events.ForEach(e =>
             {
                 if (e.canFire(elapsedTime))
                 {
-                    FiredEvent = e;
-                    render();
+                    FiredEvents.Add(e);
                     if (e.Times <= 0)
                     {
                         toRemove.Add(e);
@@ -66,29 +63,38 @@ namespace GameLoop
 
         public void render()
         {
-            Console.WriteLine("\n\tEvent " + FiredEvent.Name + " (" + FiredEvent.Times + " remaining)");
-            Console.Write("[cmd:] " + CurrLine);
+            if (FiredEvents.Count > 0)
+            {
+                FiredEvents.ForEach(e => {
+                    Console.WriteLine("\n\tEvent " + e.Name + " (" + e.Times + " remaining)");
+                });
+                FiredEvents.Clear();
+                Console.Write("[cmd:] " + CurrLine);
+            }
         }
 
         public void processInput()
         {
-            ConsoleKeyInfo key = Console.ReadKey();
-            if (key.Key == ConsoleKey.Enter)
+            if (Console.KeyAvailable)
             {
-                handleEnter();
-                return;
-            }
-
-            if (key.Key == ConsoleKey.Backspace)
-            {
-                if (CurrLine.Length > 0)
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (key.Key == ConsoleKey.Enter)
                 {
-                    CurrLine = CurrLine.Substring(0, CurrLine.Length - 1);
+                    handleEnter();
                     return;
                 }
-            }
 
-            CurrLine += key.KeyChar;
+                if (key.Key == ConsoleKey.Backspace)
+                {
+                    if (CurrLine.Length > 0)
+                    {
+                        CurrLine = CurrLine.Substring(0, CurrLine.Length - 1);
+                        return;
+                    }
+                }
+
+                CurrLine += key.KeyChar;
+            }
         }
 
         public void handleEnter()
