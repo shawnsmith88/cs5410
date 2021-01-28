@@ -7,17 +7,31 @@ namespace GameLoop
     class Event
     {
         public string Name { get; }
-        long Interval { get; }
-        int Times { get; }
+        public double Interval { get; }
+        double lastIntervalTaken;
+        public int Times { get; set; }
         public Event(string name, string interval, string times)
         {
+            lastIntervalTaken = -1;
             Name = name;
-            Interval = long.Parse(interval);
+            Interval = double.Parse(interval);
             Times = int.Parse(times);
         }
 
         public bool canFire(TimeSpan elapsedTime)
         {
+            if (lastIntervalTaken == -1)
+            {
+                lastIntervalTaken = elapsedTime.TotalMilliseconds;
+            }
+
+            if (elapsedTime.TotalMilliseconds > lastIntervalTaken + Interval)
+            {
+                lastIntervalTaken = elapsedTime.TotalMilliseconds;
+                Times--;
+                return true;
+            }
+
             return false;
         }
 

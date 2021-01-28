@@ -9,6 +9,7 @@ namespace GameLoop
         string CurrLine;
         List<Event> Events;
         bool IsRunning;
+        Event FiredEvent;
 
         public MyGame()
         {
@@ -23,6 +24,7 @@ namespace GameLoop
 
         public void run()
         {
+            Console.Write("[cmd:] ");
             IsRunning = true;
             DateTime begin = DateTime.Now;
             while (IsRunning)
@@ -39,20 +41,33 @@ namespace GameLoop
             }
 
             bool fired = false;
+            List<Event> toRemove = new List<Event>();
             Events.ForEach(e =>
             {
                 if (e.canFire(elapsedTime))
                 {
-                    fired = true;
-
-                    Console.WriteLine("\tEvent: " + e.Name);
+                    FiredEvent = e;
+                    render();
+                    if (e.Times <= 0)
+                    {
+                        toRemove.Add(e);
+                    }
                 }
             });
+
+            toRemove.ForEach(e =>
+            {
+                Events.Remove(e);
+            });
+            toRemove.Clear();
+
+            
         }
 
         public void render()
         {
-
+            Console.WriteLine("\n\tEvent " + FiredEvent.Name + " (" + FiredEvent.Times + " remaining)");
+            Console.Write("[cmd:] " + CurrLine);
         }
 
         public void processInput()
@@ -85,6 +100,7 @@ namespace GameLoop
             else
             {
                 Events.Add(Event.parseEvent(CurrLine));
+                Console.Write("\n[cmd:] ");
                 CurrLine = "";
             }
         }
