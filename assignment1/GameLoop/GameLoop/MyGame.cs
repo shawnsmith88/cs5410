@@ -10,6 +10,7 @@ namespace GameLoop
         List<Event> Events;
         bool IsRunning;
         List<Event> FiredEvents;
+        bool userEntered;
 
         public MyGame()
         {
@@ -21,11 +22,12 @@ namespace GameLoop
             Console.WriteLine("GameLoop Demo Initializing");
             Events = new List<Event>();
             FiredEvents = new List<Event>();
+            userEntered = false;
+            Console.Write("[cmd:] ");
         }
 
         public void run()
         {
-            Console.Write("[cmd:] ");
             IsRunning = true;
             DateTime begin = DateTime.Now;
             while (IsRunning)
@@ -71,6 +73,12 @@ namespace GameLoop
                 FiredEvents.Clear();
                 Console.Write("[cmd:] " + CurrLine);
             }
+            if (userEntered)
+            {
+                Console.Write("\n[cmd:] ");
+                CurrLine = "";
+                userEntered = false;
+            }
         }
 
         public void processInput()
@@ -110,8 +118,7 @@ namespace GameLoop
                 {
                     Events.Add(e);
                 }
-                Console.Write("\n[cmd:] ");
-                CurrLine = "";
+                userEntered = true;
             }
         }
     }
