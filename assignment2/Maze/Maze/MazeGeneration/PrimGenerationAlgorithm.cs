@@ -1,67 +1,98 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace Maze
 {
-    class PrimGenerationAlgorithm : GenerationAlgorithm
+    class PrimGenerationAlgorithm : IGenerationAlgorithm
     {
         private const int START_X = 0;
         private const int START_Y = 0;
-        private Maze Maze;
+        private Maze _maze;
         public Maze GenerateMaze(int dimesions)
         {
-            Maze = new Maze(dimesions);
+            _maze = new Maze(dimesions);
             List<List<bool>> visited = GenerateVisitedList(dimesions);
             int x = START_X;
             int y = START_Y;
             visited[x][y] = true;
-            List<Wall> walls = new List<Wall>();
-            if (x > 0)
-            {
-                walls.Add(Maze.Grid[x][y].Top);
-            }
-            if (y > 0)
-            {
-                walls.Add(Maze.Grid[x][y].Left);
-            }
-            if (x < dimesions)
-            {
-                walls.Add(Maze.Grid[x][y].Bottom);
-            }
-            if (y < dimesions)
-            {
-                walls.Add(Maze.Grid[x][y].Right);
-            }
+            List<Tuple<GridItem,Side>> walls = new List<Tuple<GridItem, Side>>();
             Random random = new Random();
+
+            if (y != 0)
+            {
+                walls.Add(new Tuple<GridItem,Side>(_maze.Grid[x][y], Side.TOP));
+            }
+
+            if (y < _maze.Dimensions)
+            {
+                walls.Add(new Tuple<GridItem,Side>(_maze.Grid[x][y], Side.BOTTOM));
+            }
+
+            if (x != 0)
+            {
+                walls.Add(new Tuple<GridItem,Side>(_maze.Grid[x][y], Side.LEFT));
+            }
+
+            if (x < _maze.Dimensions)
+            {
+                walls.Add(new Tuple<GridItem,Side>(_maze.Grid[x][y], Side.RIGHT));
+            }
 
             while (walls.Count > 0)
             {
                 //pick a random wall from list
-                int index = random.Next(0, walls.Count);
-                Wall wall = walls[index];
+                var index = random.Next(0, walls.Count);
+                var wall = walls[index];
                 // if only one of the two cells that the  wall divides are visited, then
                 if (!BothVisited(wall, visited))
                 {
-                    wall.Status = false;
-                    foreach (GridItem gridItem in wall.GridItems)
+                    wall.Item1.setWall(wall.Item2, false);
+
+                    Tuple<int, int> delta = GetChangeDirection(wall.Item2);
+                    x = wall.Item1.X + delta.Item1;
+                    y = wall.Item1.Y + delta.Item2;
+                    if (x < 0 || y < 0 || x > _maze.Dimensions-1 || y > _maze.Dimensions-1)
                     {
-                        visited[gridItem.X][gridItem.Y] = true;
-                        if (!walls.Contains(gridItem.Bottom) && gridItem.Bottom.Status == true)
+                        continue;
+                    }
+
+                    visited[x][y] = true;
+                    bool addTop = (y - 1 >= 0);
+                    bool addBottom = (y + 1 <= _maze.Dimensions-1);
+                    bool addLeft = (x - 1 >= 0);
+                    bool addRight = (x + 1 <= _maze.Dimensions-1);
+                    
+                    if (addTop)
+                    {
+                        if (!isInTupleArray(walls, _maze.Grid[x][y], Side.TOP))
                         {
-                            walls.Add(gridItem.Bottom);
+                            walls.Add(new Tuple<GridItem, Side>(_maze.Grid[x][y], Side.TOP));
                         }
-                        if (!walls.Contains(gridItem.Top) && gridItem.Bottom.Status == true)
+                    }
+
+                    if (addBottom)
+                    {
+                        if (!isInTupleArray(walls, _maze.Grid[x][y], Side.BOTTOM))
                         {
-                            walls.Add(gridItem.Top);
+                            walls.Add(new Tuple<GridItem, Side>(_maze.Grid[x][y], Side.BOTTOM));
                         }
-                        if (!walls.Contains(gridItem.Left) && gridItem.Bottom.Status == true)
+                    }
+
+                    if (addLeft)
+                    {
+                        if (!isInTupleArray(walls, _maze.Grid[x][y], Side.LEFT))
                         {
-                            walls.Add(gridItem.Left);
+                            walls.Add(new Tuple<GridItem, Side>(_maze.Grid[x][y], Side.LEFT));
                         }
-                        if (!walls.Contains(gridItem.Right) && gridItem.Bottom.Status == true)
+                    }
+
+                    if (addRight)
+                    {
+                        if (!isInTupleArray(walls, _maze.Grid[x][y], Side.RIGHT))
                         {
-                            walls.Add(gridItem.Right);
+                            walls.Add(new Tuple<GridItem, Side>(_maze.Grid[x][y], Side.RIGHT));
                         }
                     }
                 }
@@ -71,19 +102,86 @@ namespace Maze
                 // remove the wall from the list
             }
 
-            return Maze;
+            return _maze;
         }
 
-        private bool BothVisited(Wall wall, List<List<bool>> visited)
+        private bool BothVisited(Tuple<GridItem,Side> wall, List<List<bool>> visited)
         {
-            foreach(GridItem gridItem in wall.GridItems)
+            int x = wall.Item1.X;
+            int y = wall.Item1.Y;
+            if (x < 0 || y < 0 || x > _maze.Dimensions-1 || y > _maze.Dimensions-1) 
+            { 
+                return true;
+            }
+            int changeX = 0, changeY = 0;
+            switch (wall.Item2)
             {
-                if (!visited[gridItem.X][gridItem.Y])
-                {
+                case Side.TOP:
+                    if (x < _maze.Dimensions-1)
+                    {
+                        changeX = 1;
+                    }
+                    break;
+                case Side.BOTTOM:
+                    if (x > 0)
+                    {
+                        changeX = -1;
+                    }
+                    break;
+                case Side.LEFT:
+                    if (y > 0)
+                    {
+                        changeY = -1;
+                    }
+                    break;
+                case Side.RIGHT:
+                    if (y < _maze.Dimensions-1)
+                    {
+                        changeY = 1;
+                    }
+                    break;
+                default:
                     return false;
+            }
+
+            return visited[x][y] && visited[x + changeX][y + changeY];
+        }
+
+        private Tuple<int, int> GetChangeDirection(Side side)
+        {
+            int changeX = 0, changeY = 0;
+            switch (side)
+            {
+                case Side.TOP:
+                    changeX = 1;
+                    break;
+                case Side.BOTTOM: 
+                    changeX = -1;
+                    break;
+                case Side.LEFT: 
+                    changeY = -1;
+                    break;
+                case Side.RIGHT:
+                    changeY = 1;
+                    break;
+                default:
+                    return new Tuple<int, int>(changeX,changeY);
+            }
+
+            return new Tuple<int, int>(changeX, changeY);
+        }
+
+        private bool isInTupleArray(List<Tuple<GridItem, Side>> tuples, GridItem gridItem, Side side)
+        {
+            foreach (var tuple in tuples)
+            {
+                if (tuple.Item1.Equals(gridItem) && tuple.Item2.Equals(side))
+                {
+                    return true;
                 }
             }
-            return true;
+
+            return false;
         }
 
         private List<List<bool>> GenerateVisitedList(int dimensions)

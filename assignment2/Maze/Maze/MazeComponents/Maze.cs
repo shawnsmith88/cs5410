@@ -18,8 +18,6 @@ namespace Maze
                 for (int j = 0; j < dimensions; j++)
                 {
                     GridItem gridItem = new GridItem();
-                    gridItem.Bottom.GridItems.Add(gridItem);
-                    gridItem.Top.GridItems.Add(gridItem);
                     if (i > 0)
                     {
                         gridItem.Top = Grid[i - 1][j].Bottom;

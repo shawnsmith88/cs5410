@@ -4,58 +4,61 @@ using System.Text;
 
 namespace Maze
 {
-    public unsafe class GridItem
+    public class GridItem
     {
         // Each boolean indicates whether or not there is a wall, all are initialized to true.
-        public Wall Left;
-        public Wall Right;
-        public Wall Top;
-        public Wall Bottom;
+        public bool Left;
+        public bool Right;
+        public bool Top;
+        public bool Bottom;
         public int X;
         public int Y;
 
         public GridItem()
         {
-            if (Left == null)
-            {
-                Left = new Wall();
-            }
-            if (Right == null)
-            {
-                Right = new Wall();
-            }
-            if (Top == null)
-            {
-                Top = new Wall();
-            }
-            if (Bottom == null)
-            {
-                Bottom = new Wall();
-            }
-            Left.Status = true;
-            Right.Status = true;
-            Top.Status = true;
-            Bottom.Status = true;
+            Left = true;
+            Right = true;
+            Top = true;
+            Bottom = true;
         }
 
-        public void SetSide(Wall wall, Side side)
+        public bool getWall(Side side)
         {
-            wall.GridItems.Add(this);
-            switch(side)
+            switch (side)
             {
                 case Side.LEFT:
-                    Left = wall;
-                    break;
+                    return this.Left;
                 case Side.RIGHT:
-                    Right = wall;
-                    break;
+                    return this.Right;
                 case Side.TOP:
-                    Top = wall;
-                    break;
+                    return this.Top;
                 case Side.BOTTOM:
-                    Bottom = wall;
-                    break;
+                    return this.Bottom;
+                default:
+                    return false;
             }
         }
+
+        public void setWall(Side side, bool value)
+        {
+            switch (side)
+            {
+                case Side.TOP:
+                    this.Top = value;
+                    break;
+                case Side.LEFT:
+                    this.Left = value;
+                    break;
+                case Side.BOTTOM:
+                    this.Bottom = value;
+                    break;
+                case Side.RIGHT:
+                    this.Right = value;
+                    break;
+                default:
+                    return;
+            }
+        }
+        
     }
 }

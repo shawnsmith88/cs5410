@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Maze
 {
-    public interface GenerationAlgorithm
+    public interface IGenerationAlgorithm
     {
         Maze GenerateMaze(int dimesions);
     }

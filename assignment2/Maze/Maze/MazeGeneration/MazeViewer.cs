@@ -6,18 +6,18 @@ namespace Maze
 {
     class MazeViewer
     {
-        private Maze maze;
-        private GenerationAlgorithm generationAlgorithm;
+        private Maze _maze;
+        private IGenerationAlgorithm _generationAlgorithm;
         public void ViewMaze()
         {
-            generationAlgorithm = new PrimGenerationAlgorithm();
-            maze = generationAlgorithm.GenerateMaze(25);
+            _generationAlgorithm = new PrimGenerationAlgorithm();
+            _maze = _generationAlgorithm.GenerateMaze(5);
             Console.WriteLine("Generating Maze");
-            foreach (List<GridItem> gridItems in maze.Grid)
+            foreach (List<GridItem> gridItems in _maze.Grid)
             {
                 foreach (GridItem gridItem in gridItems)
                 {
-                    if (gridItem.Top.Status)
+                    if (gridItem.Top)
                     {
                         Console.Write("T");
                     }
@@ -25,7 +25,7 @@ namespace Maze
                     {
                         Console.Write("-");
                     }
-                    if (gridItem.Bottom.Status)
+                    if (gridItem.Bottom)
                     {
                         Console.Write("B");
                     }
@@ -33,7 +33,7 @@ namespace Maze
                     {
                         Console.Write("-");
                     }
-                    if (gridItem.Left.Status)
+                    if (gridItem.Left)
                     {
                         Console.Write("L");
                     }
@@ -41,7 +41,7 @@ namespace Maze
                     {
                         Console.Write("-");
                     }
-                    if (gridItem.Right.Status)
+                    if (gridItem.Right)
                     {
                         Console.Write("R");
                     }
