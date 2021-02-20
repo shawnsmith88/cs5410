@@ -48,27 +48,31 @@ namespace Maze
                 // if only one of the two cells that the  wall divides are visited, then
                 if (!BothVisited(wall, visited))
                 {
-                    wall.Item1.setWall(wall.Item2, false);
+                    //wall.Item1.setWall(wall.Item2, false);
 
                     Tuple<int, int> delta = GetChangeDirection(wall.Item2);
+                    var prevX = wall.Item1.X;
+                    var prevY = wall.Item1.Y;
                     x = wall.Item1.X + delta.Item1;
                     y = wall.Item1.Y + delta.Item2;
-                    if (x < 0 || y < 0 || x > _maze.Dimensions-1 || y > _maze.Dimensions-1)
+                    if (x < 0 || y < 0 || x > _maze.Dimensions || y > _maze.Dimensions)
                     {
                         continue;
                     }
+                    RemoveCorrectWalls(prevX, prevY, delta);
 
                     visited[x][y] = true;
-                    bool addTop = (y - 1 >= 0);
-                    bool addBottom = (y + 1 <= _maze.Dimensions-1);
-                    bool addLeft = (x - 1 >= 0);
-                    bool addRight = (x + 1 <= _maze.Dimensions-1);
+                    bool addTop = (y > 0);
+                    bool addBottom = (y < _maze.Dimensions);
+                    bool addLeft = (x > 0);
+                    bool addRight = (x < _maze.Dimensions);
                     
                     if (addTop)
                     {
                         if (!isInTupleArray(walls, _maze.Grid[x][y], Side.TOP))
                         {
-                            walls.Add(new Tuple<GridItem, Side>(_maze.Grid[x][y], Side.TOP));
+                            Tuple<GridItem, Side> tuple = new Tuple<GridItem,Side>(_maze.Grid[x][y], Side.TOP);
+                            walls.Add(tuple);
                         }
                     }
 
@@ -76,7 +80,8 @@ namespace Maze
                     {
                         if (!isInTupleArray(walls, _maze.Grid[x][y], Side.BOTTOM))
                         {
-                            walls.Add(new Tuple<GridItem, Side>(_maze.Grid[x][y], Side.BOTTOM));
+                            Tuple<GridItem, Side> tuple = new Tuple<GridItem,Side>(_maze.Grid[x][y], Side.BOTTOM);
+                            walls.Add(tuple);
                         }
                     }
 
@@ -84,7 +89,8 @@ namespace Maze
                     {
                         if (!isInTupleArray(walls, _maze.Grid[x][y], Side.LEFT))
                         {
-                            walls.Add(new Tuple<GridItem, Side>(_maze.Grid[x][y], Side.LEFT));
+                            Tuple<GridItem, Side> tuple = new Tuple<GridItem,Side>(_maze.Grid[x][y], Side.LEFT);
+                            walls.Add(tuple);
                         }
                     }
 
@@ -92,24 +98,84 @@ namespace Maze
                     {
                         if (!isInTupleArray(walls, _maze.Grid[x][y], Side.RIGHT))
                         {
-                            walls.Add(new Tuple<GridItem, Side>(_maze.Grid[x][y], Side.RIGHT));
+                            Tuple<GridItem, Side> tuple = new Tuple<GridItem,Side>(_maze.Grid[x][y], Side.RIGHT);
+                            walls.Add(tuple);
                         }
                     }
                 }
-                walls.Remove(wall);
+                walls.RemoveAt(index);
                 // make the wall a passage and mark the unvisited cell as part of the maze
                 // add the neighboring walls of the cell to the wall list
                 // remove the wall from the list
             }
 
+            // for (int i = 0; i < _maze.Grid.Count; i++)
+            // {
+            //     var gl = _maze.Grid[i];
+            //     for (int j = 0; j < gl.Count; j++)
+            //     {
+            //         var gi = gl[j];
+            //         if (j == 0)
+            //         {
+            //             gi.Left = true;
+            //         }
+            //
+            //         if (j == _maze.Grid.Count-1)
+            //         {
+            //             gi.Right = true;
+            //         }
+            //
+            //         if (i == 0)
+            //         {
+            //             gi.Top = true;
+            //         }
+            //
+            //         if (i == gl.Count-1)
+            //         {
+            //             gi.Bottom = true;
+            //         }
+            //     }
+            // }
+            
+
             return _maze;
+        }
+
+        private void RemoveCorrectWalls(int x, int y, Tuple<int, int> deltas)
+        {
+            var dx = deltas.Item1;
+            var dy = deltas.Item2;
+                if (deltas.Item1 == 1)
+                {
+                    _maze.Grid[x][y].Right = false;
+                    _maze.Grid[x+1][y].Left = false;
+                }
+
+                if (deltas.Item1 == -1)
+                {
+                    _maze.Grid[x][y].Left = false;
+                    _maze.Grid[x-1][y].Right = false;
+                }
+
+                if (deltas.Item2 == 1)
+                {
+                    _maze.Grid[x][y].Bottom = false;
+                    _maze.Grid[x][y+1].Top = false;
+                }
+
+                if (deltas.Item2 == -1)
+                {
+                    _maze.Grid[x][y].Top = false;
+                    _maze.Grid[x][y-1].Bottom = false;
+                }
         }
 
         private bool BothVisited(Tuple<GridItem,Side> wall, List<List<bool>> visited)
         {
             int x = wall.Item1.X;
             int y = wall.Item1.Y;
-            if (x < 0 || y < 0 || x > _maze.Dimensions-1 || y > _maze.Dimensions-1) 
+            Console.Write("X: " + x + " Y: " + y);
+            if (x < 0 || y < 0 || x > _maze.Dimensions || y > _maze.Dimensions) 
             { 
                 return true;
             }
@@ -117,32 +183,33 @@ namespace Maze
             switch (wall.Item2)
             {
                 case Side.TOP:
-                    if (x < _maze.Dimensions-1)
+                    if (y >= 1)
+                    {
+                        changeY = -1;
+                    }
+                    break;
+                case Side.BOTTOM:
+                    if (y < _maze.Dimensions-2)
                     {
                         changeX = 1;
                     }
                     break;
-                case Side.BOTTOM:
+                case Side.LEFT:
                     if (x > 0)
                     {
                         changeX = -1;
                     }
                     break;
-                case Side.LEFT:
-                    if (y > 0)
-                    {
-                        changeY = -1;
-                    }
-                    break;
                 case Side.RIGHT:
-                    if (y < _maze.Dimensions-1)
+                    if (x < _maze.Dimensions-2)
                     {
-                        changeY = 1;
+                        changeX = 1;
                     }
                     break;
                 default:
                     return false;
             }
+            Console.WriteLine(" dx: " + changeX + " dy: " + changeY);
 
             return visited[x][y] && visited[x + changeX][y + changeY];
         }
@@ -152,17 +219,17 @@ namespace Maze
             int changeX = 0, changeY = 0;
             switch (side)
             {
-                case Side.TOP:
-                    changeX = 1;
+                case Side.BOTTOM:
+                    changeY = 1;
                     break;
-                case Side.BOTTOM: 
-                    changeX = -1;
-                    break;
-                case Side.LEFT: 
+                case Side.TOP: 
                     changeY = -1;
                     break;
+                case Side.LEFT: 
+                    changeX = -1;
+                    break;
                 case Side.RIGHT:
-                    changeY = 1;
+                    changeX = 1;
                     break;
                 default:
                     return new Tuple<int, int>(changeX,changeY);

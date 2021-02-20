@@ -17,6 +17,14 @@ namespace Maze
             {
                 foreach (GridItem gridItem in gridItems)
                 {
+                    if (gridItem.Left)
+                    {
+                        Console.Write("L");
+                    }
+                    else
+                    {
+                        Console.Write("-");
+                    }
                     if (gridItem.Top)
                     {
                         Console.Write("T");
@@ -33,14 +41,7 @@ namespace Maze
                     {
                         Console.Write("-");
                     }
-                    if (gridItem.Left)
-                    {
-                        Console.Write("L");
-                    }
-                    else
-                    {
-                        Console.Write("-");
-                    }
+
                     if (gridItem.Right)
                     {
                         Console.Write("R");
@@ -49,7 +50,7 @@ namespace Maze
                     {
                         Console.Write("-");
                     }
-                    Console.Write("\t");
+                    Console.Write(" ");
                 }
                 Console.Write("\n");
             }
