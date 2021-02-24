@@ -2,13 +2,13 @@
 
 namespace Maze
 {
-    class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        [STAThread]
+        static void Main()
         {
-            Console.WriteLine("Hello World!");
-            MazeViewer mazeViewer = new MazeViewer();
-            mazeViewer.ViewMaze();
+            using (var game = new MazeGameLoop())
+                game.Run();
         }
     }
 }

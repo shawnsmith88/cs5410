@@ -109,35 +109,6 @@ namespace Maze
                 // remove the wall from the list
             }
 
-            // for (int i = 0; i < _maze.Grid.Count; i++)
-            // {
-            //     var gl = _maze.Grid[i];
-            //     for (int j = 0; j < gl.Count; j++)
-            //     {
-            //         var gi = gl[j];
-            //         if (j == 0)
-            //         {
-            //             gi.Left = true;
-            //         }
-            //
-            //         if (j == _maze.Grid.Count-1)
-            //         {
-            //             gi.Right = true;
-            //         }
-            //
-            //         if (i == 0)
-            //         {
-            //             gi.Top = true;
-            //         }
-            //
-            //         if (i == gl.Count-1)
-            //         {
-            //             gi.Bottom = true;
-            //         }
-            //     }
-            // }
-            
-
             return _maze;
         }
 
@@ -174,11 +145,6 @@ namespace Maze
         {
             int x = wall.Item1.X;
             int y = wall.Item1.Y;
-            Console.Write("X: " + x + " Y: " + y);
-            if (x < 0 || y < 0 || x > _maze.Dimensions || y > _maze.Dimensions) 
-            { 
-                return true;
-            }
             int changeX = 0, changeY = 0;
             switch (wall.Item2)
             {
@@ -189,7 +155,7 @@ namespace Maze
                     }
                     break;
                 case Side.BOTTOM:
-                    if (y < _maze.Dimensions-2)
+                    if (y < _maze.Dimensions-1)
                     {
                         changeX = 1;
                     }
@@ -201,7 +167,7 @@ namespace Maze
                     }
                     break;
                 case Side.RIGHT:
-                    if (x < _maze.Dimensions-2)
+                    if (x < _maze.Dimensions-1)
                     {
                         changeX = 1;
                     }
@@ -209,7 +175,6 @@ namespace Maze
                 default:
                     return false;
             }
-            Console.WriteLine(" dx: " + changeX + " dy: " + changeY);
 
             return visited[x][y] && visited[x + changeX][y + changeY];
         }
@@ -254,7 +219,7 @@ namespace Maze
         private List<List<bool>> GenerateVisitedList(int dimensions)
         {
             List<List<bool>> list = new List<List<bool>>();
-            for (int i = 0; i < dimensions; i++)
+            for (int i = 0; i <= dimensions; i++)
             {
                 List<bool> inner = new List<bool>();
                 for (int j = 0; j < dimensions; j++)
