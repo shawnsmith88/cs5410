@@ -19,5 +19,7 @@ namespace Maze
         public const string TopBottom = "topBottom";
         public const string Horizontal = "horizontal";
         public const string Vertical = "vertical";
+        public const string Doge = "doge";
+        public const string MoonRocket = "moonRocket";
     }
 }

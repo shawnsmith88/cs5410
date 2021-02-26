@@ -22,6 +22,10 @@ namespace Maze
         private List<List<GameObject>> _gameObjects;
         private IInputService _inputService;
         private int _targetMazeIndex;
+        private ISpriteService _spriteService;
+        private ISpriteService _finishLineService;
+        private Direction _nextDirection;
+        private GameObject _character;
 
         public MazeGameLoop()
         {
@@ -34,6 +38,8 @@ namespace Maze
         {
             _generationAlgorithm = new PrimGenerationAlgorithm();
             _mazeService = new MazeService();
+            _spriteService = new DogeService();
+            _finishLineService = new MoonRocketSpriteService();
             _gameObjects = new List<List<GameObject>>();
             _mazes = new List<Maze>();
             for (int i = 0; i < 4; i++)
@@ -53,6 +59,8 @@ namespace Maze
             {
                 _gameObjects.Add(new List<GameObject>());
                 _mazeService.render(_mazes[i],_graphics,this.Content, _gameObjects[i]);
+                _character = _spriteService.renderSprite(_graphics, _mazes[i], this.Content);
+                _gameObjects[i].Add(_finishLineService.renderSprite(_graphics, _mazes[i], this.Content));
             }
 
             // TODO: use this.Content to load your game content here
@@ -113,12 +121,20 @@ namespace Maze
                         break;
                 }
             }
+
+            if (_state == State.InGame)
+            {
+                _nextDirection = _inputService.getInputDirection();
+                _character = _spriteService.move(_graphics,_mazes[_targetMazeIndex],_character, _nextDirection);
+            }
         }
 
         private void DrawMaze()
         {
             //draw maze
+            
             _mazeService.Draw(_gameObjects[_targetMazeIndex], _spriteBatch);
+            _spriteService.Draw(_character, _spriteBatch);
         }
         
         private void Init_Maze(MenuOptions menuOptions)
