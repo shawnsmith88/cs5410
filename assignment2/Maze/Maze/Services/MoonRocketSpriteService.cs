@@ -27,7 +27,7 @@ namespace Maze.Services
             return gameObject;
         }
 
-        public GameObject move(GraphicsDeviceManager graphicsDeviceManager, Maze maze, GameObject gameObject, Direction direction)
+        public GameObject move(GraphicsDeviceManager graphicsDeviceManager, Maze maze, GameObject gameObject, Direction direction, ContentManager content)
         {
             //finish line will not be moving
             return gameObject;

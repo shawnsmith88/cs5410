@@ -9,7 +9,9 @@ namespace Maze.Services
     public interface ISpriteService
     {
         GameObject renderSprite(GraphicsDeviceManager graphicsDeviceManager, Maze maze, ContentManager content);
-        GameObject move(GraphicsDeviceManager graphicsDeviceManager, Maze maze, GameObject gameObject, Direction direction);
+
+        GameObject move(GraphicsDeviceManager graphicsDeviceManager, Maze maze, GameObject gameObject,
+            Direction direction, ContentManager content);
         void Draw(GameObject gameObject, SpriteBatch spriteBatch);
     }
 }

@@ -125,7 +125,7 @@ namespace Maze
             if (_state == State.InGame)
             {
                 _nextDirection = _inputService.getInputDirection();
-                _character = _spriteService.move(_graphics,_mazes[_targetMazeIndex],_character, _nextDirection);
+                _character = _spriteService.move(_graphics,_mazes[_targetMazeIndex],_character, _nextDirection, this.Content);
             }
         }
 

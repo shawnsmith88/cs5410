@@ -21,5 +21,7 @@ namespace Maze
         public const string Vertical = "vertical";
         public const string Doge = "doge";
         public const string MoonRocket = "moonRocket";
+        public const string Breadcrumb = "breadcrumb";
+        public const string Future = "future";
     }
 }
