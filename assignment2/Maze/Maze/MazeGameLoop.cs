@@ -26,6 +26,7 @@ namespace Maze
         private ISpriteService _finishLineService;
         private Direction _nextDirection;
         private GameObject _character;
+        private InGameOptions _inGameOptions;
 
         public MazeGameLoop()
         {
@@ -72,6 +73,11 @@ namespace Maze
                 Exit();
 
             processInput();
+            if (_state == State.InGame)
+            {
+                _spriteService.HandleInGameOptions(_character,_inGameOptions);
+                _character = _spriteService.move(_graphics,_mazes[_targetMazeIndex],_character, _nextDirection, this.Content);
+            }
             base.Update(gameTime);
         }
 
@@ -124,8 +130,8 @@ namespace Maze
 
             if (_state == State.InGame)
             {
+                _inGameOptions = _inputService.getInGameOptions();
                 _nextDirection = _inputService.getInputDirection();
-                _character = _spriteService.move(_graphics,_mazes[_targetMazeIndex],_character, _nextDirection, this.Content);
             }
         }
 

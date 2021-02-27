@@ -118,6 +118,25 @@ namespace Maze.Services
             return gameObject;
         }
 
+        public void HandleInGameOptions(GameObject gameObject, InGameOptions inGameOptions)
+        {
+            DogeSprite dogeSprite = (DogeSprite) gameObject;
+            if (inGameOptions == InGameOptions.Breadcrumbs)
+            {
+                dogeSprite.ShowBreadCrumbs = !dogeSprite.ShowBreadCrumbs;
+            }
+
+            if (inGameOptions == InGameOptions.Hint)
+            {
+                dogeSprite.ShowHint = !dogeSprite.ShowHint;
+            }
+
+            if (inGameOptions == InGameOptions.ShortestPath)
+            {
+                dogeSprite.ShowBestPath = !dogeSprite.ShowBestPath;
+            }
+        }
+
         public void Draw(GameObject gameObject, SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(gameObject.Texture, gameObject.Rectangle, Color.White);

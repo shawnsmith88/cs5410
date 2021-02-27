@@ -27,6 +27,12 @@ namespace Maze.Services
             return gameObject;
         }
 
+        public void HandleInGameOptions(GameObject gameObject, InGameOptions inGameOptions)
+        {
+            //finish line doesn't care about in game options
+            return;
+        }
+
         public GameObject move(GraphicsDeviceManager graphicsDeviceManager, Maze maze, GameObject gameObject, Direction direction, ContentManager content)
         {
             //finish line will not be moving

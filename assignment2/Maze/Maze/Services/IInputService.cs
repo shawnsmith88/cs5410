@@ -6,5 +6,6 @@ namespace Maze.Services
     {
         Direction getInputDirection();
         MenuOptions getMenuInput();
+        InGameOptions getInGameOptions();
     }
 }

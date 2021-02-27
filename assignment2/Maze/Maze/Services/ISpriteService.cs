@@ -13,5 +13,6 @@ namespace Maze.Services
         GameObject move(GraphicsDeviceManager graphicsDeviceManager, Maze maze, GameObject gameObject,
             Direction direction, ContentManager content);
         void Draw(GameObject gameObject, SpriteBatch spriteBatch);
+        void HandleInGameOptions(GameObject gameObject, InGameOptions inGameOptions);
     }
 }

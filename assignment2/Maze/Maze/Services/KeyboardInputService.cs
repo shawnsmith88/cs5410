@@ -12,6 +12,9 @@ namespace Maze.Services
         private List<Keys> _rightKeys;
         private List<Keys> _leftKeys;
         private KeyboardState previousKeyboardState;
+        private Keys _hintKey;
+        private Keys _shortestPathKey;
+        private Keys _breadcrumbKey;
         public KeyboardInputService()
         {
             _upKeys = new List<Keys>();
@@ -26,8 +29,35 @@ namespace Maze.Services
             _leftKeys.Add(Keys.A);
             _rightKeys.Add(Keys.Right);
             _rightKeys.Add(Keys.D);
-            
+            _hintKey = Keys.H;
+            _breadcrumbKey = Keys.B;
+            _shortestPathKey = Keys.P;
         }
+
+        public InGameOptions getInGameOptions()
+        {
+            KeyboardState keyboardState = Keyboard.GetState();
+            foreach (var key in keyboardState.GetPressedKeys())
+            {
+                if (_breadcrumbKey == key && !isPreviousPressed(key))
+                {
+                    return InGameOptions.Breadcrumbs;
+                }
+
+                if (_hintKey == key && !isPreviousPressed(key))
+                {
+                    return InGameOptions.Hint;
+                }
+
+                if (_shortestPathKey == key && !isPreviousPressed(key))
+                {
+                    return InGameOptions.ShortestPath;
+                }
+            }
+
+            return InGameOptions.None;
+        }
+
         public Direction getInputDirection()
         {
             KeyboardState keyboardState = Keyboard.GetState();
